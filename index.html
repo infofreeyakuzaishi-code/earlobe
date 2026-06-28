@@ -4,6 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIMITABU - 耳つぼダイエット サポートDX</title>
+    
+    <!-- ========================================== -->
+    <!-- 📱 PWA化のための追記設定（ここから） -->
+    <!-- ========================================== -->
+    <!-- アプリの設定書（manifest.json）を読み込む -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- スマホのアドレスバーやテーマカラーを指定 -->
+    <meta name="theme-color" content="#4A90E2">
+    
+    <!-- PWAの裏方プログラム（sw.js）を起動するスクリプト -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('PWA サービスワーカー登録成功！', reg))
+                    .catch(err => console.log('PWA サービスワーカー登録失敗...', err));
+            });
+        }
+    </script>
+    <!-- ========================================== -->
+    <!-- 📱 PWA化のための追記設定（ここまで） -->
+    <!-- ========================================== -->
+
     <!-- Google Fonts & FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
