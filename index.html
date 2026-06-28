@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>耳つぼダイエット DXデモアプリ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #4A90E2;
+            --accent-color: #FF6B6B;
+            --bg-color: #F5F7FA;
+            --card-bg: #FFFFFF;
+            --text-color: #333333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        body {
+            background-color: #e0e6ed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* スマホ型コンテナ */
+        .phone-container {
+            width: 375px;
+            height: 760px;
+            background-color: var(--bg-color);
+            border: 12px solid #333;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ステータスバー */
+        .status-bar {
+            height: 30px;
+            background: #333;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 25px 0;
+            font-size: 12px;
+        }
+
+        /* ヘッダー */
+        .app-header {
+            background-color: #ffffff;
+            padding: 15px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: relative;
+            border-bottom: 1px solid #eee;
+            z-index: 10;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            color: var(--primary-color);
+            cursor: pointer;
+            display: none;
+        }
+
+        /* コンテンツエリア */
+        .app-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+
+        /* 共通カード */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* ボタンデザイン */
+        .btn-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 15px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        /* 動画リストスタイル */
+        .video-item {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+        .video-thumbnail {
+            background: #2c3e50;
+            height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            position: relative;
+        }
+        .video-thumbnail i {
+            font-size: 36px;
+            color: #fff;
+            background: rgba(0,0,0,0.4);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-bottom: 8px;
+        }
+        .video-info {
+            padding: 12px;
+        }
+        .video-title {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* --- 疑似動画プレイヤー画面 --- */
+        .player-container {
+            background: #000;
+            width: 100%;
+            height: 200px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+        }
+        
+        /* 再生中のアニメーション用 */
+        .playing-ear {
+            width: 80px;
+            height: 80px;
+            background: #ffcbd1;
+            border-radius: 50% 40% 40% 70%;
+            position: relative;
+            display: none;
+            animation: pulse 2s infinite;
+        }
+        .playing-ear::after {
+            content: '点';
+            position: absolute;
+            top: 30px;
+            left: 35px;
+            width: 8px;
+            height: 8px;
+            background: red;
+            border-radius: 50%;
+            box-shadow: 0 0 8px red;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(255,107,107,0.5); }
+            100% { transform: scale(1); }
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.6);
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 4px;
+            background: #555;
+            margin: 0 10px;
+            position: relative;
+            border-radius: 2px;
+        }
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+
+<div class="phone-container">
+    <div class="status-bar">
+        <span>09:41</span>
+        <div><i class="fas fa-signal"></i> <i class="fas fa-wifi"></i> <i class="fas fa-battery-full"></i></div>
+    </div>
+
+    <div class="app-header">
+        <span id="backBtn" class="back-btn" onclick="goBack()"><i class="fas fa-chevron-left"></i> 戻る</span>
+        <span id="headerTitle">耳つぼダイエット ポータル</span>
+    </div>
+
+    <div class="app-content">
+        
+        <div id="pageHome" class="page active">
+            <div style="text-align:center; margin-bottom:20px;">
+                <p style="font-size:13px; color:#666;">歯科医院×耳つぼダイエット</p>
+                <h2 style="font-size:20px; color:#333; margin-top:5px;">患者様向けサポートDX</h2>
+            </div>
+
+            <div class="card" onclick="changePage('pageVideos', '施術・セルフケア動画')">
+                <div class="card-title" style="color: var(--accent-color);">
+                    <i class="fas fa-play-circle"></i> 施術・セルフケア動画
+                </div>
+                <div class="card-desc">
+                    自宅で行うツボの押し方や、食事指導の動画をいつでも確認できます。
+                </div>
+            </div>
+
+            <div style="margin: 25px 0 10px 5px; font-size:12px; font-weight:bold; color:#888;">外部連携サービス</div>
+            <a href="https://member.flpj.co.jp/membersite/membersite.php" target="_blank" class="btn-link">
+                <span><i class="fas fa-shopping-cart" style="margin-right:10px;"></i> サプリメント・商品購入</span>
+                <i class="fas fa-external-link-alt"></i>
+            </a>
+            <a href="https://www.bunkyo-dental.com/" target="_blank" class="btn-link" style="border-color: #2ECC71; color: #2ECC71;">
+                <span><i class="fas fa-clinic-medical" style="margin-right:10px;"></i> 文京歯科医院 公式サイト</span>
+                <i class="fas fa-external-link-alt"></i>
+            </a>
+        </div>
+
+        <div id="pageVideos" class="page">
+            <div class="video-item" onclick="openPlayer('【基本】耳つぼマッサージの位置と押し方', '神門（しんもん）と飢点（きてん）を正確に刺激し、自律神経の安定と食欲の抑制を促します。食前の15分前に優しく指圧してください。')">
+                <div class="video-thumbnail" style="background: #34495e;">
+                    <i class="fas fa-play"></i>
+                    <span style="font-size:11px;">レッスン 1 (01:30)</span>
+                </div>
+                <div class="video-info">
+                    <div class="video-title">【基本】耳つぼマッサージの位置と押し方</div>
+                </div>
+            </div>
+
+            <div class="video-item" onclick="openPlayer('リバウンドを防ぐ！初期の食事アドバイス', '日本痩身医学協会が推奨する、無理のない栄養摂取と咀嚼（そしゃく）のステップです。歯科での噛み合わせ指導とも連動しています。')">
+                <div class="video-thumbnail" style="background: #27ae60;">
+                    <i class="fas fa-play"></i>
+                    <span style="font-size:11px;">レッスン 2 (02:15)</span>
+                </div>
+                <div class="video-info">
+                    <div class="video-title">リバウンドを防ぐ！初期の食事アドバイス</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="pagePlayer" class="page">
+            <div class="player-container">
+                <div id="playerPlaceholder"><i class="fas fa-play-circle" style="font-size:48px; opacity:0.8;"></i></div>
+                <div id="earGraphic" class="playing-ear"></div>
+                
+                <div class="video-controls">
+                    <i id="playIcon" class="fas fa-play"></i>
+                    <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+                    <span id="videoTime">0:00 / 1:30</span>
+                </div>
+            </div>
+
+            <h3 id="playerTitle" style="font-size:16px; margin-bottom:10px;">動画タイトル</h3>
+            <p id="playerDesc" class="card-desc" style="background: #fff; padding: 15px; border-radius: 8px;">解説テキスト</p>
+        </div>
+
+    </div>
+
+    <div class="app-footer">
+        &copy; 日本痩身医学協会 加盟院サポートDemo
+    </div>
+</div>
+
+<script>
+    const headerTitle = document.getElementById('headerTitle');
+    const backBtn = document.getElementById('backBtn');
+    
+    // 画面遷移の履歴管理
+    let pageHistory = ['pageHome'];
+    let titleHistory = ['耳つぼダイエット ポータル'];
+
+    function changePage(pageId, title) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        
+        pageHistory.push(pageId);
+        titleHistory.push(title);
+        
+        headerTitle.innerText = title;
+        backBtn.style.display = 'block';
+    }
+
+    function goBack() {
+        stopVideoSim(); // 移動時にタイマーを止める
+        
+        pageHistory.pop();
+        titleHistory.pop();
+        
+        const prevPage = pageHistory[pageHistory.length - 1];
+        const prevTitle = titleHistory[titleHistory.length - 1];
+        
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(prevPage).classList.add('active');
+        
+        headerTitle.innerText = prevTitle;
+        if(pageHistory.length === 1) backBtn.style.display = 'none';
+    }
+
+    // --- 動画再生の擬似シミュレーション処理 ---
+    let playTimer;
+    function openPlayer(title, desc) {
+        changePage('pagePlayer', '動画再生');
+        document.getElementById('playerTitle').innerText = title;
+        document.getElementById('playerDesc').innerText = desc;
+        
+        // 再生リセット
+        stopVideoSim();
+        
+        // 1秒後に自動で再生アニメーションを擬似開始
+        setTimeout(() => {
+            document.getElementById('playerPlaceholder').style.display = 'none';
+            document.getElementById('earGraphic').style.display = 'block';
+            document.getElementById('playIcon').className = 'fas fa-pause';
+            
+            let percent = 0;
+            playTimer = setInterval(() => {
+                percent += 2;
+                document.getElementById('progressFill').style.width = percent + '%';
+                document.getElementById('videoTime').innerText = `0:${percent < 10 ? '0'+Math.floor(percent*0.9) : Math.floor(percent*0.9)} / 1:30`;
+                if(percent >= 100) stopVideoSim();
+            }, 200);
+        }, 800);
+    }
+
+    function stopVideoSim() {
+        clearInterval(playTimer);
+        document.getElementById('playerPlaceholder').style.display = 'flex';
+        document.getElementById('earGraphic').style.display = 'none';
+        document.getElementById('playIcon').className = 'fas fa-play';
+        document.getElementById('progressFill').style.width = '0%';
+        document.getElementById('videoTime').innerText = '0:00 / 1:30';
+    }
+</script>
+
+</body>
+</html>
