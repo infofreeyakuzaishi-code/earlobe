@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>耳つぼダイエット DXデモアプリ</title>
+    <title>MIMITABU - 耳つぼダイエット サポートDX</title>
     <!-- Google Fonts & FontAwesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
             --primary-color: #4A90E2;
-            --association-color: #E67E22; /* 協会用カラー：温かみのあるオレンジ */
+            --association-color: #E67E22;
             --accent-color: #FF6B6B;
             --bg-color: #F5F7FA;
             --card-bg: #FFFFFF;
@@ -23,6 +23,10 @@
             margin: 0;
             padding: 0;
             font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        .brand-font {
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
@@ -64,20 +68,23 @@
             padding: 15px;
             text-align: center;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 18px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             position: relative;
             border-bottom: 1px solid #eee;
             z-index: 10;
+            color: #333;
         }
 
         .back-btn {
             position: absolute;
             left: 15px;
-            top: 15px;
+            top: 17px;
             color: var(--primary-color);
             cursor: pointer;
             display: none;
+            font-size: 14px;
+            font-weight: 500;
         }
 
         /* コンテンツエリア */
@@ -174,7 +181,7 @@
             font-weight: bold;
         }
 
-        /* --- 疑似動画プレイヤー画面 --- */
+        /* 疑似動画プレイヤー画面 */
         .player-container {
             background: #000;
             width: 100%;
@@ -252,7 +259,7 @@
 
     <div class="app-header">
         <span id="backBtn" class="back-btn" onclick="goBack()"><i class="fas fa-chevron-left"></i> 戻る</span>
-        <span id="headerTitle">耳つぼダイエット ポータル</span>
+        <span id="headerTitle" class="brand-font" style="letter-spacing: 1px;">MIMITABU</span>
     </div>
 
     <div class="app-content">
@@ -260,8 +267,8 @@
         <!-- 【階層0：トップページ】 -->
         <div id="pageHome" class="page active">
             <div style="text-align:center; margin-bottom:20px;">
-                <p style="font-size:13px; color:#666;">歯科医院×耳つぼダイエット</p>
-                <h2 style="font-size:20px; color:#333; margin-top:5px;">患者様向けサポートDX</h2>
+                <h2 class="brand-font" style="font-size:26px; color:var(--primary-color); font-weight:700;">MIMITABU</h2>
+                <p style="font-size:12px; color:#666; margin-top:2px; font-weight:500; letter-spacing:0.5px;">歯科医院×耳つぼダイエット サポートDX</p>
             </div>
 
             <!-- 動画一覧へ遷移 -->
@@ -276,7 +283,7 @@
 
             <div style="margin: 20px 0 10px 5px; font-size:12px; font-weight:bold; color:#888;">外部連携サービス</div>
             
-            <!-- 【追加】日本痩身医学協会HPリンク -->
+            <!-- 日本痩身医学協会HP -->
             <a href="https://soushin-igaku.org/aboutus" target="_blank" class="btn-link" style="border-color: var(--association-color); color: var(--association-color);">
                 <span><i class="fas fa-university" style="margin-right:10px;"></i> 日本痩身医学協会について</span>
                 <i class="fas fa-external-link-alt"></i>
@@ -337,8 +344,9 @@
 
     </div>
 
-    <div class="app-footer">
-        &copy; 日本痩身医学協会 加盟院サポートDemo
+    <!-- アプリフッダー -->
+    <div class="app-footer brand-font" style="font-size: 10px; letter-spacing: 0.5px;">
+        &copy; MIMITABU - 日本痩身医学協会 加盟院サポート
     </div>
 </div>
 
@@ -347,7 +355,7 @@
     const backBtn = document.getElementById('backBtn');
     
     let pageHistory = ['pageHome'];
-    let titleHistory = ['耳つぼダイエット ポータル'];
+    let titleHistory = ['MIMITABU'];
 
     function changePage(pageId, title) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -357,6 +365,7 @@
         titleHistory.push(title);
         
         headerTitle.innerText = title;
+        headerTitle.classList.remove('brand-font'); // 英語ブランド名以外は通常フォント
         backBtn.style.display = 'block';
     }
 
@@ -373,7 +382,11 @@
         document.getElementById(prevPage).classList.add('active');
         
         headerTitle.innerText = prevTitle;
-        if(pageHistory.length === 1) backBtn.style.display = 'none';
+        
+        if(pageHistory.length === 1) {
+            backBtn.style.display = 'none';
+            headerTitle.classList.add('brand-font'); // トップに戻ったらブランドフォントを適用
+        }
     }
 
     let playTimer;
