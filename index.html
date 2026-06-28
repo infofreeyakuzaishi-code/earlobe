@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>耳つぼダイエット DXデモアプリ</title>
+    <!-- Google Fonts & FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
             --primary-color: #4A90E2;
+            --association-color: #E67E22; /* 協会用カラー：温かみのあるオレンジ */
             --accent-color: #FF6B6B;
             --bg-color: #F5F7FA;
             --card-bg: #FFFFFF;
@@ -125,11 +127,12 @@
             background: #ffffff;
             border: 2px solid var(--primary-color);
             color: var(--primary-color);
-            padding: 15px 20px;
+            padding: 14px 18px;
             border-radius: 12px;
             text-decoration: none;
             font-weight: 700;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            font-size: 14px;
         }
 
         /* 動画リストスタイル */
@@ -186,7 +189,6 @@
             overflow: hidden;
         }
         
-        /* 再生中のアニメーション用 */
         .playing-ear {
             width: 80px;
             height: 80px;
@@ -255,12 +257,14 @@
 
     <div class="app-content">
         
+        <!-- 【階層0：トップページ】 -->
         <div id="pageHome" class="page active">
             <div style="text-align:center; margin-bottom:20px;">
                 <p style="font-size:13px; color:#666;">歯科医院×耳つぼダイエット</p>
                 <h2 style="font-size:20px; color:#333; margin-top:5px;">患者様向けサポートDX</h2>
             </div>
 
+            <!-- 動画一覧へ遷移 -->
             <div class="card" onclick="changePage('pageVideos', '施術・セルフケア動画')">
                 <div class="card-title" style="color: var(--accent-color);">
                     <i class="fas fa-play-circle"></i> 施術・セルフケア動画
@@ -270,17 +274,28 @@
                 </div>
             </div>
 
-            <div style="margin: 25px 0 10px 5px; font-size:12px; font-weight:bold; color:#888;">外部連携サービス</div>
+            <div style="margin: 20px 0 10px 5px; font-size:12px; font-weight:bold; color:#888;">外部連携サービス</div>
+            
+            <!-- 【追加】日本痩身医学協会HPリンク -->
+            <a href="https://soushin-igaku.org/aboutus" target="_blank" class="btn-link" style="border-color: var(--association-color); color: var(--association-color);">
+                <span><i class="fas fa-university" style="margin-right:10px;"></i> 日本痩身医学協会について</span>
+                <i class="fas fa-external-link-alt"></i>
+            </a>
+
+            <!-- 商品購入リンク -->
             <a href="https://member.flpj.co.jp/membersite/membersite.php" target="_blank" class="btn-link">
                 <span><i class="fas fa-shopping-cart" style="margin-right:10px;"></i> サプリメント・商品購入</span>
                 <i class="fas fa-external-link-alt"></i>
             </a>
+
+            <!-- 歯科医院リンク -->
             <a href="https://www.bunkyo-dental.com/" target="_blank" class="btn-link" style="border-color: #2ECC71; color: #2ECC71;">
                 <span><i class="fas fa-clinic-medical" style="margin-right:10px;"></i> 文京歯科医院 公式サイト</span>
                 <i class="fas fa-external-link-alt"></i>
             </a>
         </div>
 
+        <!-- 【階層1：動画一覧ページ】 -->
         <div id="pageVideos" class="page">
             <div class="video-item" onclick="openPlayer('【基本】耳つぼマッサージの位置と押し方', '神門（しんもん）と飢点（きてん）を正確に刺激し、自律神経の安定と食欲の抑制を促します。食前の15分前に優しく指圧してください。')">
                 <div class="video-thumbnail" style="background: #34495e;">
@@ -303,13 +318,14 @@
             </div>
         </div>
 
+        <!-- 【階層2：疑似動画プレイヤーページ】 -->
         <div id="pagePlayer" class="page">
             <div class="player-container">
                 <div id="playerPlaceholder"><i class="fas fa-play-circle" style="font-size:48px; opacity:0.8;"></i></div>
                 <div id="earGraphic" class="playing-ear"></div>
                 
                 <div class="video-controls">
-                    <i id="playIcon" class="fas fa-play"></i>
+                    <i id="playIcon" class="fas fa-pause"></i>
                     <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
                     <span id="videoTime">0:00 / 1:30</span>
                 </div>
@@ -330,7 +346,6 @@
     const headerTitle = document.getElementById('headerTitle');
     const backBtn = document.getElementById('backBtn');
     
-    // 画面遷移の履歴管理
     let pageHistory = ['pageHome'];
     let titleHistory = ['耳つぼダイエット ポータル'];
 
@@ -346,7 +361,7 @@
     }
 
     function goBack() {
-        stopVideoSim(); // 移動時にタイマーを止める
+        stopVideoSim();
         
         pageHistory.pop();
         titleHistory.pop();
@@ -361,17 +376,14 @@
         if(pageHistory.length === 1) backBtn.style.display = 'none';
     }
 
-    // --- 動画再生の擬似シミュレーション処理 ---
     let playTimer;
     function openPlayer(title, desc) {
         changePage('pagePlayer', '動画再生');
         document.getElementById('playerTitle').innerText = title;
         document.getElementById('playerDesc').innerText = desc;
         
-        // 再生リセット
         stopVideoSim();
         
-        // 1秒後に自動で再生アニメーションを擬似開始
         setTimeout(() => {
             document.getElementById('playerPlaceholder').style.display = 'none';
             document.getElementById('earGraphic').style.display = 'block';
