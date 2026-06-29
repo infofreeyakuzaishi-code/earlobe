@@ -5,16 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIMITABU - 耳つぼダイエット サポートDX</title>
     
-    <!-- ========================================== -->
-    <!-- 📱 PWA化のための追記設定（ここから） -->
-    <!-- ========================================== -->
-    <!-- アプリの設定書（manifest.json）を読み込む -->
+    <!-- 📱 PWA化のための追記設定 -->
     <link rel="manifest" href="manifest.json">
-    
-    <!-- スマホのアドレスバーやテーマカラーを指定 -->
     <meta name="theme-color" content="#4A90E2">
     
-    <!-- PWAの裏方プログラム（sw.js）を起動するスクリプト -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -24,9 +18,6 @@
             });
         }
     </script>
-    <!-- ========================================== -->
-    <!-- 📱 PWA化のための追記設定（ここまで） -->
-    <!-- ========================================== -->
 
     <!-- Google Fonts & FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
@@ -166,6 +157,51 @@
             font-size: 14px;
         }
 
+        /* PWAインストール促進ボタン */
+        .btn-pwa-install {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--primary-color);
+            color: white;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            font-size: 14px;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+        }
+
+        /* 案内用のポップアップマスク */
+        .pwa-modal-mask {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        .pwa-modal-content {
+            background: white;
+            width: 100%;
+            padding: 25px 20px;
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .pwa-modal-close {
+            position: absolute;
+            top: 15px; right: 20px;
+            font-size: 20px; color: #aaa; cursor: pointer;
+        }
+
         /* 動画リストスタイル */
         .video-item {
             background: white;
@@ -295,6 +331,11 @@
                 <p style="font-size:12px; color:#666; margin-top:2px; font-weight:500; letter-spacing:0.5px;">歯科医院×耳つぼダイエット サポートDX</p>
             </div>
 
+            <!-- ★ホーム画面に追加するボタン -->
+            <button class="btn-pwa-install" onclick="showInstallGuide()">
+                <i class="fas fa-download"></i> アプリをホーム画面に追加
+            </button>
+
             <!-- 動画一覧へ遷移 -->
             <div class="card" onclick="changePage('pageVideos', '施術・セルフケア動画')">
                 <div class="card-title" style="color: var(--accent-color);">
@@ -368,6 +409,22 @@
 
     </div>
 
+    <!-- 📥 ホーム画面追加の案内用ポップアップ -->
+    <div id="pwaModal" class="pwa-modal-mask" onclick="closeInstallGuide()">
+        <div class="pwa-modal-content" onclick="event.stopPropagation()">
+            <div class="pwa-modal-close" onclick="closeInstallGuide()">&times;</div>
+            <h4 style="font-size:16px; margin-bottom:15px; color:#333;">アプリとしてインストール</h4>
+            <p style="font-size:13px; color:#666; line-height:1.6; margin-bottom:15px;">
+                iPhone(Safari)をご利用の場合：<br>
+                画面下のメニューから <strong style="color:var(--primary-color);"><i class="fas fa-share-square"></i> 共有ボタン</strong> を押し、<br>
+                <strong>「ホーム画面に追加」</strong> を選択してください。
+            </p>
+            <p style="font-size:12px; color:#999; border-top:1px dashed #eee; padding-top:10px;">
+                ※Android(Chrome)の場合は、自動的に追加の確認画面が表示されるか、ブラウザメニューから追加できます。
+            </p>
+        </div>
+    </div>
+
     <!-- アプリフッダー -->
     <div class="app-footer brand-font" style="font-size: 10px; letter-spacing: 0.5px;">
         &copy; MIMITABU - 日本痩身医学協会 加盟院サポート
@@ -381,6 +438,14 @@
     let pageHistory = ['pageHome'];
     let titleHistory = ['MIMITABU'];
 
+    // 案内用ポップアップの表示・非表示
+    function showInstallGuide() {
+        document.getElementById('pwaModal').style.display = 'flex';
+    }
+    function closeInstallGuide() {
+        document.getElementById('pwaModal').style.display = 'none';
+    }
+
     function changePage(pageId, title) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
@@ -389,7 +454,7 @@
         titleHistory.push(title);
         
         headerTitle.innerText = title;
-        headerTitle.classList.remove('brand-font'); // 英語ブランド名以外は通常フォント
+        headerTitle.classList.remove('brand-font');
         backBtn.style.display = 'block';
     }
 
@@ -409,7 +474,7 @@
         
         if(pageHistory.length === 1) {
             backBtn.style.display = 'none';
-            headerTitle.classList.add('brand-font'); // トップに戻ったらブランドフォントを適用
+            headerTitle.classList.add('brand-font');
         }
     }
 
